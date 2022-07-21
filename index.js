@@ -48,8 +48,6 @@ const { db } = require("./models/index.js");
 
 db.sequelize.sync().then(() => {
   console.log("Database connected successfully");
-
-
 }).catch(err => {
   console.log("Error connecting to database", err);
 });

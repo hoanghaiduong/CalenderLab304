@@ -2,12 +2,14 @@ const config = require("../config/config.js");
 const Sequelize = require("sequelize");
 const { calender, Calender } = require("./calender.model.js")
 const { reg_calender, Reg_Calender } = require("./reg_calender.model.js")
+console.log(config);
+
 const sequelize = new Sequelize(
   config.DB,
   config.USER,
   config.PASSWORD,
   {
-    host: config.HOST,
+    host: config.DB_HOST,
     dialect: config.dialect,
     port: config.PORT,
     operatorsAliases: 0,
