@@ -134,6 +134,48 @@
                 }
             }
         },
+        "/api/user/upload-avatar-user":{
+            "post":{
+                "tags":[
+                    "User"
+                ],
+                "summary":"Upload avatar",
+                "description":"Upload avatar",
+                "produces":[
+                    "application/json"
+                ],
+                "consumes":[
+                    "multipart/form-data"
+                ],
+                "parameters":[
+                    {
+                        "name":"image",
+                        "in":"formData",
+                        "description":"File",
+                        "required":true,
+                        "type":"file"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"Successfully",
+                        "schema":{
+                            "$ref":"#/definitions/Avatar_res"
+                        },
+                        "examples":{
+                            "$ref":"#/definitions/Avatar_res"
+                        }
+                    },
+                    "400":{
+                        "description":"Invalid UID supplied"
+                    },
+                    "404":{
+                        "description":"USER NOT FOUND"
+                    }
+                }
+            }
+        
+        },
         "/api/reg_calender/get_reg_calender": {
             "get": {
                 "tags": [

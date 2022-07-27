@@ -2,23 +2,20 @@ const config = require("../config/config.js");
 const Sequelize = require("sequelize");
 const { calender, Calender } = require("./calender.model.js")
 const { reg_calender, Reg_Calender } = require("./reg_calender.model.js")
-const sequelize = new Sequelize(
-  config.DB,
-  config.USER,
-  config.PASSWORD,
-  {
-    host: config.HOST,
-    dialect: config.dialect,
-    port: config.PORT,
-    operatorsAliases: 0,
-    pool: {
-      max: config.pool.max,
-      min: config.pool.min,
-      acquire: config.pool.acquire,
-      idle: config.pool.idle
-    },
-    timezone: config.timeZone
-  }
+const sequelize = new Sequelize({
+  host:config.HOST,
+  port:config.PORT,
+  username:config.USER,
+  password:config.PASSWORD,
+  database:config.DB,
+  dialect:config.dialect,
+  pool: {
+    max: 30,
+    min: 5,
+    acquire: 0,
+    idle: 10000
+  },
+}
 );
 
 const db = {};
