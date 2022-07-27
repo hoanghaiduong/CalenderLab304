@@ -1,9 +1,9 @@
 module.exports = {
     HOST: "103.121.91.135",
     PORT: 3306,
-    USER: "tuan",
+    USER: "lab",
     PASSWORD: "tuanadmin",
-    DB: "test",
+    DB: "calender_manager",
     dialect: "mysql",
     pool: {
         max: 30,
