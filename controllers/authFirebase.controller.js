@@ -867,7 +867,7 @@ const linkWithEmailAndPassword = (req, res) => {
 
             }
             else {
-                res.status(500).send({
+                res.status(500).send({  
                     message: "Some error occurred while Link With Email And Password."
                 });
             }

@@ -652,6 +652,54 @@
                 }
             }
         },
+        "/api/calender/get_Calender_by_month":{
+            "get": {
+                "tags": [
+                    "Calendar"
+                ],
+                "summary": "Lấy ra tất cả lịch của 1 tháng",
+                "description": "Tất cả lịch của phòng lab do admin tạo ra",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Tháng",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Năm",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully",
+                        "schema": {
+                            "$ref": "#/definitions/Calendar_res"
+                        },
+                        "examples": {
+                            "$ref": "#/definitions/Calendar_res"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID supplied"
+                    },
+                    "404": {
+                        "description": "NOT_FOUND"
+                    }
+                }
+            }
+        
+        },
         "/api/calender/create": {
             "post": {
                 "tags": [
@@ -1019,6 +1067,21 @@
                     "type": "integer",
                     "description": "Tối đa người đặt lịch",
                     "example": 30
+                },
+                "monthOfYear": {
+                    "type": "integer",
+                    "description": "Tháng",
+                    "example": 1
+                },
+                "year": {
+                    "type": "integer",
+                    "description": "Năm",
+                    "example": 2020
+                },
+                "dayOfMonth": {
+                    "type": "integer",
+                    "description": "Ngày",
+                    "example": 1
                 },
                 "createdAt": {
                     "type": "string",
