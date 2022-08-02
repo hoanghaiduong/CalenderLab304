@@ -1,8 +1,24 @@
+module.exports = {
+    HOST: "103.121.91.135",
+    PORT: 3306,
+    USER: "lab",
+    PASSWORD: "tuanadmin",
+    DB: "calender_manager",
+    dialect: "mysql",
+    pool: {
+        max: 30,
+        min: 5,
+        acquire: 999999,
+        idle: 10000
+    },
+    timeZone: "+07:00"
+ };
+
 // module.exports = {
-//     HOST: "103.121.91.135",
+//     HOST: "localhost",
 //     PORT: 3306,
-//     USER: "lab",
-//     PASSWORD: "tuanadmin",
+//     USER: "root",
+//     PASSWORD: "",
 //     DB: "calender_manager",
 //     dialect: "mysql",
 //     pool: {
@@ -13,18 +29,3 @@
 //     },
 //     timeZone: "+07:00"
 // };
-module.exports = {
-    HOST: "localhost",
-    PORT: 3306,
-    USER: "root",
-    PASSWORD: "",
-    DB: "calender_manager",
-    dialect: "mysql",
-    pool: {
-        max: 30,
-        min: 5,
-        acquire: 999999,
-        idle: 10000
-    },
-    timeZone: "+07:00"
-};
