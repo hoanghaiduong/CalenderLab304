@@ -3,7 +3,7 @@ module.exports = {
     PORT: 3306,
     USER: "lab",
     PASSWORD: "tuanadmin",
-    DB: "test",
+    DB: "calender_manager",
     dialect: "mysql",
     pool: {
         max: 999,
