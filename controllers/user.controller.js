@@ -1,270 +1,302 @@
-const { db } = require('../models/index');
+const { db } = require("../models/index");
 const User = db.user;
 const Reg_Calender = db.reg_calender;
 const Calender = db.calender;
 const Op = db.Sequelize.Op;
 var bcrypt = require("bcryptjs");
-const { defaultApp, storageFire, defaultAppConfig } = require('../config/firebase');
-const multer = require('multer');
-const path = require('path');
+const {
+  defaultApp,
+  storageFire,
+  defaultAppConfig,
+} = require("../config/firebase");
+const multer = require("multer");
+const path = require("path");
 const firebaseAdmin = defaultApp.auth();
 
 const createUser = (req, res) => {
-    // Validate request
-    try {
-        User.findOne({
-            where: {
-                uid: req.body.uid
-            }
-        }).then(user => {
-            if (user) {
-                res.status(200).send({
-                    message: "User already exists."
-                });
-            }
-            else {
-                User.findByPk(req.body.uid).then((user) => {
-                    // Create a User
-                    User.create({
-                        uid: req.body.uid,
-                        displayName: req.body.displayName,
-                        email: req.body.email,
-                        photoURL: req.body.photoURL,
-                        phoneNumber: req.body.phoneNumber,
-                    }).then(user => {
-                        res.status(201).json({
-                            message: "User was created successfully!",
-                            user: user
-                        });
-                    }).catch(err => {
-                        res.status(500).send({
-                            message: err.message || "Some error occurred while creating User."
-                        });
-                    })
-
-                }
-                ).catch(err => {
-                    console.log(err)
-                })
-
-            }
-        })
-    } catch (error) {
-        console.log(error)
-    }
-
-
-}
-const getUserById = (req, res) => {
-    //findone by uuid
-    User.findOne({
+  // Validate request
+  try {
+    const { uid } = req.query;
+    if (!uid) {
+      res.status(400).send({
+        message: "User ID is required",
+      });
+    } else {
+      User.findOne({
         where: {
-            uid: req.params.uid
-        }
-    }).then((user) => {
+          uid: uid,
+        },
+      }).then((user) => {
         if (user) {
-            firebaseAdmin.getUser(req.params.uid).then(user => {
-                if (user) {
-                    res.status(200).json({
-                        message: "Get User Successfully!",
-                        data: user
-                    })
-                }
-                else {
-                    res.status(400).send({
-                        message: "User NOT FOUND."
-                    });
-                }
+          res.status(200).send({
+            message: "User already exists.",
+          });
+        } else {
+          User.findByPk(uid)
+            .then((user) => {
+              // Create a User
+              User.create({
+                uid: uid,
+                displayName: req.body.displayName,
+                email: req.body.email,
+                photoURL: req.body.photoURL,
+                phoneNumber: req.body.phoneNumber,
+              })
+                .then((user) => {
+                  res.status(201).json({
+                    message: "User was created successfully!",
+                    user: user,
+                  });
+                })
+                .catch((err) => {
+                  res.status(500).send({
+                    message:
+                      err.message || "Some error occurred while creating User.",
+                  });
+                });
             })
-
-        }
-        else {
-            res.status(400).send({
-                message: "User was not found."
+            .catch((err) => {
+              console.log(err);
             });
         }
+      });
     }
-    ).catch(err => {
-        res.status(500).send({
-            message: err.message
-        });
-    }
-    );
 
-}
+    // .catch(err => {
+    //    res.status(400).json({
+    //         message: "UID is not valid."
+    //    })
+    // })
+  } catch (error) {
+    console.log(error);
+  }
+};
+const getUserById = (req, res) => {
+  //findone by uuid
+  User.findOne({
+    where: {
+      uid: req.params.uid,
+    },
+  })
+    .then((user) => {
+      if (user) {
+        firebaseAdmin.getUser(req.params.uid).then((user) => {
+          if (user) {
+            res.status(200).json({
+              message: "Get User Successfully!",
+              data: user,
+            });
+          } else {
+            res.status(400).send({
+              message: "User NOT FOUND.",
+            });
+          }
+        });
+      } else {
+        res.status(400).send({
+          message: "User was not found.",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message,
+      });
+    });
+};
 
 const getAllUser = (req, res) => {
-    User.findAll().then(user => {
-        res.status(200).json({
-            message: "Get all user successfully!",
-            data: user
-        })
-    }
-    ).catch(err => {
-        res.status(500).send({
-            message: err.message
-        });
-    }
-    );
-}
+  User.findAll()
+    .then((user) => {
+      res.status(200).json({
+        message: "Get all user successfully!",
+        data: user,
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message,
+      });
+    });
+};
 
 const deleteUser = (req, res) => {
-    const uid = req.params.uid;
-    firebaseAdmin.deleteUser(uid).then(() => {
-        User.findOne({
-            where: {
-                uid: uid
-            }
-        }).then((user) => {
-            if (user) {
-                User.destroy({
-                    where: {
-                        uid: uid
-                    }
-                }).then(() => {
-                    res.status(200).json({
-                        message: "Delete User Successfully!"
-                    })
-                }
-                ).catch(err => {
-
-                    res.status(500).send({
-                        message: err.message || "Some error occurred while deleting User."
-                    });
-                }
-                );
-            }
-            else {
-                res.status(400).send({
-                    message: "User NOT FOUND."
-                });
-            }
-        })
-    }).catch(err => {
-        res.status(500).send({
-            message: err.message || "Some error occurred while deleting User."
-        });
-    })
-
-}
-const get_Calender_available = (req, res) => {
-    Calender.findAll({
+  const uid = req.params.uid;
+  firebaseAdmin
+    .deleteUser(uid)
+    .then(() => {
+      User.findOne({
         where: {
-            available: true
+          uid: uid,
+        },
+      }).then((user) => {
+        if (user) {
+          User.destroy({
+            where: {
+              uid: uid,
+            },
+          })
+            .then(() => {
+              res.status(200).json({
+                message: "Delete User Successfully!",
+              });
+            })
+            .catch((err) => {
+              res.status(500).send({
+                message:
+                  err.message || "Some error occurred while deleting User.",
+              });
+            });
+        } else {
+          res.status(400).send({
+            message: "User NOT FOUND.",
+          });
         }
-    }).then(calender => {
-        res.status(200).json({
-            message: "Get all calender successfully!",
-            data: calender
-        })
+      });
     })
-}
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while deleting User.",
+      });
+    });
+};
+const get_Calender_available = (req, res) => {
+  Calender.findAll({
+    where: {
+      available: true,
+    },
+  }).then((calender) => {
+    res.status(200).json({
+      message: "Get all calender successfully!",
+      data: calender,
+    });
+  });
+};
 //người dùng xem lại những lịch mình đăng kí
 const getUserRegCaledar = (req, res) => {
-
-    User.findByPk(req.userId).then((user) => {
-        if (user) {
-            Reg_Calender.findAll({
-                where: {
-                    user_id: req.userId
-                },
-                include: [{
-                    model: Calender,
-                    attributes: ['id', 'DayOftheweek', 'SessionDay', 'available', 'capacity']
-                }, {
-                    model: User,
-                    attributes: ['uid', 'displayName', 'email', 'phoneNumber', 'photoURL',]
-                }]
-            }).then((reg_calender) => {
-                res.status(200).json({
-                    message: "Get User Reg Calender  Successfully!",
-                    data: reg_calender
-                })
-            }
-            ).catch(err => {
-                res.status(500).send({
-                    message: err.message
-                });
-            }
-            );
-        }
-        else {
-            res.status(400).send({
-                message: "User was not found."
+  User.findByPk(req.userId)
+    .then((user) => {
+      if (user) {
+        Reg_Calender.findAll({
+          where: {
+            user_id: req.userId,
+          },
+          include: [
+            {
+              model: Calender,
+              attributes: [
+                "id",
+                "DayOftheweek",
+                "SessionDay",
+                "available",
+                "capacity",
+              ],
+            },
+            {
+              model: User,
+              attributes: [
+                "uid",
+                "displayName",
+                "email",
+                "phoneNumber",
+                "photoURL",
+              ],
+            },
+          ],
+        })
+          .then((reg_calender) => {
+            res.status(200).json({
+              message: "Get User Reg Calender  Successfully!",
+              data: reg_calender,
             });
-        }
-    }
-    ).catch(err => {
-        res.status(500).send({
-            message: err.message
+          })
+          .catch((err) => {
+            res.status(500).send({
+              message: err.message,
+            });
+          });
+      } else {
+        res.status(400).send({
+          message: "User was not found.",
         });
-    }
-    );
-}
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message,
+      });
+    });
+};
 const stroage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './uploads/avatar');
-    }
-    ,
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname))
-    }
-})
+  destination: function (req, file, cb) {
+    cb(null, "./uploads/avatar");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
 const uploadAvatar = multer({
-    storage: stroage,
-    limits: {
-        fileSize: 1024 * 1024 * 5
-    },
-    fileFilter: function (req, file, cb) {
-        const fileTypes = /jpeg|jpg|png|gif/;
-        const mimeType = fileTypes.test(file.mimetype);
-        const extname = fileTypes.test(path.extname(file.originalname));
-        if (mimeType && extname) {
-            return cb(null, true);
-        }
-        cb("Error: Images Only!");
-
-
+  storage: stroage,
+  limits: {
+    fileSize: 1024 * 1024 * 5,
+  },
+  fileFilter: function (req, file, cb) {
+    const fileTypes = /jpeg|jpg|png|gif/;
+    const mimeType = fileTypes.test(file.mimetype);
+    const extname = fileTypes.test(path.extname(file.originalname));
+    if (mimeType && extname) {
+      return cb(null, true);
     }
-}).single('avatar');
+    cb("Error: Images Only!");
+  },
+}).single("avatar");
 
 const userUploadAvatar = (req, res) => {
-    if (req.file) {
-
-        console.log(req.file.firebaseUrl);
-        User.findByPk(req.userId).then((user) => {
-            if (user) {
-                User.update({
-                    photoURL: req.file.firebaseUrl
-                }, {
-                    where: {
-                        uid: req.userId
-                    }
-                }).then(() => {
-                    res.status(200).json({
-                        message: "Upload Avatar Successfully!"
-                    })
-                }
-                ).catch(err => {
-                    res.status(500).send({
-                        message: err.message
-                    });
-                }
-                );
+  if (req.file) {
+    console.log(req.file.firebaseUrl);
+    User.findByPk(req.userId)
+      .then((user) => {
+        if (user) {
+          User.update(
+            {
+              photoURL: req.file.firebaseUrl,
+            },
+            {
+              where: {
+                uid: req.userId,
+              },
             }
-            else {
-                res.status(400).send({
-                    message: "User was not found."
-                });
-            }
-        }).catch(err => {
-            res.status(500).send({
-                message: err.message
+          )
+            .then(() => {
+              res.status(200).json({
+                message: "Upload Avatar Successfully!",
+              });
+            })
+            .catch((err) => {
+              res.status(500).send({
+                message: err.message,
+              });
             });
-        })
-    }
-}
+        } else {
+          res.status(400).send({
+            message: "User was not found.",
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message,
+        });
+      });
+  }
+};
 module.exports = {
-    getAllUser, deleteUser, getUserRegCaledar, createUser, getUserById, get_Calender_available,
-    uploadAvatar, userUploadAvatar
-}
+  getAllUser,
+  deleteUser,
+  getUserRegCaledar,
+  createUser,
+  getUserById,
+  get_Calender_available,
+  uploadAvatar,
+  userUploadAvatar,
+};

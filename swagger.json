@@ -38,6 +38,12 @@
                 ],
                 "parameters": [
                     {
+                        "name": "UID",
+                        "in": "path",
+                        "description": "Mã uid của user",
+                        "required": true
+                    },
+                    {
                         "name": "body",
                         "in": "body",
                         "description": "User object that needs to be added to the store",
@@ -1029,10 +1035,7 @@
         "Create_user":{
             "type": "object",
             "properties": {
-                "uid": {
-                    "type": "string",
-                    "description": "Mã id của user"
-                },
+                
                 "displayName": {
                     "type": "string",
                     "description": "Tên người dùng"
