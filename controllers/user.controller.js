@@ -32,41 +32,30 @@ const createUser = (req, res) => {
             message: "User already exists.",
           });
         } else {
-          User.findByPk(uid)
+          User.create({
+            uid: uid,
+            displayName: req.body.displayName,
+            email: req.body.email,
+            photoURL: req.body.photoURL,
+            phoneNumber: req.body.phoneNumber,
+          })
             .then((user) => {
-              // Create a User
-              User.create({
-                uid: uid,
-                displayName: req.body.displayName,
-                email: req.body.email,
-                photoURL: req.body.photoURL,
-                phoneNumber: req.body.phoneNumber,
-              })
-                .then((user) => {
-                  res.status(201).json({
-                    message: "User was created successfully!",
-                    user: user,
-                  });
-                })
-                .catch((err) => {
-                  res.status(500).send({
-                    message:
-                      err.message || "Some error occurred while creating User.",
-                  });
-                });
+              res.status(201).json({
+                message: "User was created successfully!",
+                user: user,
+              });
             })
             .catch((err) => {
-              console.log(err);
+              res.status(500).send({
+                message:
+                  "Error creating user: " + err.message ||
+                  "Some error occurred while creating user.",
+              });
             });
         }
       });
     }
 
-    // .catch(err => {
-    //    res.status(400).json({
-    //         message: "UID is not valid."
-    //    })
-    // })
   } catch (error) {
     console.log(error);
   }
