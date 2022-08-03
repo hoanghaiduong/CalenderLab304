@@ -23,6 +23,44 @@
         }
     ],
     "paths": {
+        "/api/user/createUser":{
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create User",
+                "description": "Create User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "User object that needs to be added to the store",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Create_user"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User added to the store",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user supplied"
+                    }
+                }
+            }
+        
+        },
         "/api/user/getAllUser": {
             "get": {
                 "tags": [
@@ -202,7 +240,7 @@
                 }
             }
         },
-        "/setAdmin/{uid}":{
+        "/api/auth/firebase/setAdmin/{uid}":{
             "post":{
                 "tags":[
                     "Admin"
@@ -988,6 +1026,34 @@
         }
     },
     "definitions": {
+        "Create_user":{
+            "type": "object",
+            "properties": {
+                "uid": {
+                    "type": "string",
+                    "description": "Mã id của user"
+                },
+                "displayName": {
+                    "type": "string",
+                    "description": "Tên người dùng"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Email người dùng"
+                },
+                "photoURL": {
+                    "type": "string",
+                    "description": "Địa chỉ hình ảnh của user"
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "description": "Số điện thoại người dùng",
+                    "example": "+987654321"
+                }
+                
+            }
+        
+        },
         "Account": {
             "type": "object",
             "properties": {
