@@ -2,7 +2,6 @@ const config = require("../config/config.js");
 const Sequelize = require("sequelize");
 const { calender, Calender } = require("./calender.model.js")
 const { reg_calender, Reg_Calender } = require("./reg_calender.model.js")
-console.log(config);
 
 const sequelize = new Sequelize(
   config.DB,

@@ -48,8 +48,7 @@ const createUser = (req, res) => {
             .catch((err) => {
               res.status(500).send({
                 message:
-                  "Error creating user: " + err.message ||
-                  "Some error occurred while creating user.",
+                  "Error creating user: Checking email has been already used" 
               });
             });
         }
