@@ -38,7 +38,7 @@
                 ],
                 "parameters": [
                     {
-                        "name": "UID",
+                        "name": "uid",
                         "in": "query",
                         "description": "Mã uid của user",
                         "required": true,
