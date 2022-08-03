@@ -257,7 +257,7 @@ const signupWithEmailAndPassword = async (req, res) => {
         password: req.body.password,
     }).then(async user => {
         if (user) {
-            await User.create({
+            User.create({
                 uid: user.uid,
                 email: user.email,
                 phoneNumber: user.phoneNumber,
@@ -269,28 +269,30 @@ const signupWithEmailAndPassword = async (req, res) => {
             }).then(result => {
                 if (result) {
                     console.log("save user from MySql  success");
-                }
-                res.status(200).send({
-                    message: "Create User Successfully!",
-                    data: {
-                        uid: user.uid,
-                        email: user.email,
-                        phoneNumber: user.phoneNumber,
-                        displayName: user.displayName,
-                        photoURL: user.photoURL,
-                        emailVerified: user.emailVerified,
-                        disabled: user.disabled,
 
-                    }
-                })
+                    res.status(200).send({
+                        message: "Create User Successfully!",
+                        data: {
+                            uid: user.uid,
+                            email: user.email,
+                            phoneNumber: user.phoneNumber,
+                            displayName: user.displayName,
+                            photoURL: user.photoURL,
+                            emailVerified: user.emailVerified,
+                            disabled: user.disabled,
+
+                        }
+                    })
+                }
+                else{
+                    console.log("save user from MySql  fail");
+                }
             }).catch(err => {
                 console.log(err);
             })
 
         }
-        res.status(200).send({
-            message: "Create User Successfully!",
-        })
+
 
     }
     ).catch(async err => {
@@ -331,11 +333,6 @@ const signinWithEmailPassword = (req, res) => {
                     refresh_token: response.data.refreshToken,
                     expires_in: response.data.expiresIn
                 }
-            }).catch(err => {
-                console.log(err);
-                res.status(500).send({
-                    message: err.message
-                });
             })
         })
     }
@@ -870,7 +867,7 @@ const linkWithEmailAndPassword = (req, res) => {
 
             }
             else {
-                res.status(500).send({
+                res.status(500).send({  
                     message: "Some error occurred while Link With Email And Password."
                 });
             }

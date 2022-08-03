@@ -23,6 +23,44 @@
         }
     ],
     "paths": {
+        "/api/user/createUser":{
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create User",
+                "description": "Create User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "description": "User object that needs to be added to the store",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/Create_user"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User added to the store",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid user supplied"
+                    }
+                }
+            }
+        
+        },
         "/api/user/getAllUser": {
             "get": {
                 "tags": [
@@ -134,6 +172,48 @@
                 }
             }
         },
+        "/api/user/upload-avatar-user":{
+            "post":{
+                "tags":[
+                    "User"
+                ],
+                "summary":"Upload avatar",
+                "description":"Upload avatar",
+                "produces":[
+                    "application/json"
+                ],
+                "consumes":[
+                    "multipart/form-data"
+                ],
+                "parameters":[
+                    {
+                        "name":"image",
+                        "in":"formData",
+                        "description":"File",
+                        "required":true,
+                        "type":"file"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"Successfully",
+                        "schema":{
+                            "$ref":"#/definitions/Avatar_res"
+                        },
+                        "examples":{
+                            "$ref":"#/definitions/Avatar_res"
+                        }
+                    },
+                    "400":{
+                        "description":"Invalid UID supplied"
+                    },
+                    "404":{
+                        "description":"USER NOT FOUND"
+                    }
+                }
+            }
+        
+        },
         "/api/reg_calender/get_reg_calender": {
             "get": {
                 "tags": [
@@ -159,6 +239,40 @@
                     }
                 }
             }
+        },
+        "/api/auth/firebase/setAdmin/{uid}":{
+            "post":{
+                "tags":[
+                    "Admin"
+                ],
+                "summary":"Set admin",
+                "description":"Set admin",
+                "produces":[
+                    "application/json"
+                ],
+                "parameters":[
+                    {
+                        "name":"uid",
+                        "in":"path",
+                        "description":"Mã uid của user",
+                        "required":true,
+                        "type":"string",
+                        "format":"string"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"Successfully"
+                    },
+                    "400":{
+                        "description":"Invalid UID supplied"
+                    },
+                    "404":{
+                        "description":"USER NOT FOUND"
+                    }
+                }
+            }
+        
         },
         "/api/reg_calender/get_reg_calender_active": {
             "get": {
@@ -576,6 +690,54 @@
                 }
             }
         },
+        "/api/calender/get_Calender_by_month":{
+            "get": {
+                "tags": [
+                    "Calendar"
+                ],
+                "summary": "Lấy ra tất cả lịch của 1 tháng",
+                "description": "Tất cả lịch của phòng lab do admin tạo ra",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "description": "Tháng",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Năm",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully",
+                        "schema": {
+                            "$ref": "#/definitions/Calendar_res"
+                        },
+                        "examples": {
+                            "$ref": "#/definitions/Calendar_res"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID supplied"
+                    },
+                    "404": {
+                        "description": "NOT_FOUND"
+                    }
+                }
+            }
+        
+        },
         "/api/calender/create": {
             "post": {
                 "tags": [
@@ -864,6 +1026,34 @@
         }
     },
     "definitions": {
+        "Create_user":{
+            "type": "object",
+            "properties": {
+                "uid": {
+                    "type": "string",
+                    "description": "Mã id của user"
+                },
+                "displayName": {
+                    "type": "string",
+                    "description": "Tên người dùng"
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Email người dùng"
+                },
+                "photoURL": {
+                    "type": "string",
+                    "description": "Địa chỉ hình ảnh của user"
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "description": "Số điện thoại người dùng",
+                    "example": "+987654321"
+                }
+                
+            }
+        
+        },
         "Account": {
             "type": "object",
             "properties": {
@@ -943,6 +1133,21 @@
                     "type": "integer",
                     "description": "Tối đa người đặt lịch",
                     "example": 30
+                },
+                "monthOfYear": {
+                    "type": "integer",
+                    "description": "Tháng",
+                    "example": 1
+                },
+                "year": {
+                    "type": "integer",
+                    "description": "Năm",
+                    "example": 2020
+                },
+                "dayOfMonth": {
+                    "type": "integer",
+                    "description": "Ngày",
+                    "example": 1
                 },
                 "createdAt": {
                     "type": "string",

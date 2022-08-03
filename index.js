@@ -40,9 +40,7 @@ app.use("/api/user", userroutes);
 app.use("/api/calender", calenderRoutes);
 app.use("/api/reg_calender", regCalenderRoutes);
 
-
-
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT ||8080;
 
 const { db } = require("./models/index.js");
 
@@ -51,7 +49,7 @@ db.sequelize.sync().then(() => {
 }).catch(err => {
   console.log("Error connecting to database", err);
 });
+
 app.listen(PORT, () => {
- 
   console.log(`Server is running on port ${PORT}.`);
 });

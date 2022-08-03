@@ -4,7 +4,7 @@ const Reg_Calender = db.reg_calender;
 const Calender = db.calender;
 const Op = db.Sequelize.Op;
 var bcrypt = require("bcryptjs");
-const { defaultApp,storageFire, defaultAppConfig } = require('../config/firebase');
+const { defaultApp, storageFire, defaultAppConfig } = require('../config/firebase');
 const multer = require('multer');
 const path = require('path');
 const firebaseAdmin = defaultApp.auth();
@@ -229,49 +229,40 @@ const uploadAvatar = multer({
 }).single('avatar');
 
 const userUploadAvatar = (req, res) => {
-    res.send({
-        message: "Upload avatar successfully!",
-        data:req.file
-    });
-    // const image = req.file;
-    // if (!image) {
-    //     return res.status(400).send({
-    //         message: "No file uploaded!"
-    //     });
-    // }
-    
-    // const filename = Date.now() + path.extname(image.originalname);
-    // const file=storageFire.file(filename);
-    
-    // const stream = file.createWriteStream({
-    //     metadata: {
-    //         contentType: image.mimetype
-    //     }
-    // });
-    // stream.on("error", (err) => {
-    //     console.log(err)
-    //     res.status(500).send({
-    //         message: err.message
-    //     });
-    // })
-    // stream.on("finish",async() => {
-    //   await  file.makePublic().then(() => {
-    //         res.status(200).json({
-    //             message: "Upload avatar successfully!",
-    //             data: {
-    //                 url: file.publicUrl
-    //             }
-    //         })
-    //     }
-    //     ).catch(err => {
-    //         res.status(500).send({
-    //             message: err.message
-    //         });
-    //     })
-    //     req.file.firebaseUrl = `https://firebasestorage.googleapis.com/${defaultAppConfig.storageBucket}/${file.name}`;
-    // })
-    // stream.end(image.buffer);
-   
+    if (req.file) {
+
+        console.log(req.file.firebaseUrl);
+        User.findByPk(req.userId).then((user) => {
+            if (user) {
+                User.update({
+                    photoURL: req.file.firebaseUrl
+                }, {
+                    where: {
+                        uid: req.userId
+                    }
+                }).then(() => {
+                    res.status(200).json({
+                        message: "Upload Avatar Successfully!"
+                    })
+                }
+                ).catch(err => {
+                    res.status(500).send({
+                        message: err.message
+                    });
+                }
+                );
+            }
+            else {
+                res.status(400).send({
+                    message: "User was not found."
+                });
+            }
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message
+            });
+        })
+    }
 }
 module.exports = {
     getAllUser, deleteUser, getUserRegCaledar, createUser, getUserById, get_Calender_available,
