@@ -307,6 +307,7 @@ const signupWithEmailAndPassword = async (req, res) => {
 }
 
 const signinWithEmailPassword = (req, res) => {
+   try {
     if (!req.body.email || !req.body.password) {
         res.status(400).send({
             email: "Email is required",
@@ -315,7 +316,7 @@ const signinWithEmailPassword = (req, res) => {
     }
     else {
         axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-        axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${defaultAppConfig.apiKey}`, {
+      await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${defaultAppConfig.apiKey}`, {
             email: req.body.email,
             password: req.body.password,
             returnSecureToken: true
@@ -334,8 +335,15 @@ const signinWithEmailPassword = (req, res) => {
                     expires_in: response.data.expiresIn
                 }
             })
+        }).catch(async err => {
+            res.status(500).send({
+                message: err.message 
+            });
         })
     }
+   } catch (error) {
+        console.log(error);
+   }
 
 }
 // Thu hồi tất cả các mã làm mới cho một người dùng được chỉ định vì bất kỳ lý do gì.
@@ -534,7 +542,25 @@ const verifyResetPassword = (req, res) => {
                         message: "Some error occurred while verifying Reset Password."
                     });
                 }
-            })
+            }).catch(async (err) => {
+                if (err.response.data.error.code == "INVALID_OOB_CODE") {
+                    res.status(400).send({
+                        message: "Invalid OobCode"
+                    });
+                }
+                else if (err.response.data.error.code == "EXPIRED_OOB_CODE") {
+                    res.status(400).send({
+                        message: "Expired OobCode"
+                    });
+                }
+                else {
+                    res.status(500).send({
+                        message: "Some error occurred while verifying Reset Password."
+                    });
+                }
+            }
+
+            )
         }
     } catch (error) {
         res.status(500).send({
