@@ -219,6 +219,10 @@ const setAdmin = (req, res) => {
                 message: "Set Admin Successfully!",
                 note: "Please logout and login again get token new !"
             })
+        }).catch(err=>{
+            res.status(500).send({
+                message: err.message
+            });
         })
     }
 }
@@ -235,6 +239,10 @@ const revokeAdmin = (req, res) => {
                 message: "Revoke Admin Successfully!",
                 note: "Please logout and login again get token new !"
             })
+        }).catch(err=>{
+            res.status(500).send({
+                message: err.message
+            });
         })
     }
 }
@@ -316,7 +324,7 @@ const signinWithEmailPassword = (req, res) => {
     }
     else {
         axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-      await axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${defaultAppConfig.apiKey}`, {
+       axios.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${defaultAppConfig.apiKey}`, {
             email: req.body.email,
             password: req.body.password,
             returnSecureToken: true

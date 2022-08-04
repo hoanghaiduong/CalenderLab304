@@ -281,6 +281,41 @@
             }
         
         },
+        "/api/auth/firebase/revokeAdmin/{uid}":{
+            "post":{
+                "tags":[
+                    "Admin"
+                ],
+                "summary":"Revoke admin",
+                "description":"Revoke admin",
+                "produces":[
+                    "application/json"
+                ],
+                "parameters":[
+                    {
+                        "name":"uid",
+                        "in":"path",
+                        "description":"Mã uid của user",
+                        "required":true,
+                        "type":"string",
+                        "format":"string"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description":"Successfully"
+                    },
+                    "400":{
+                        "description":"Invalid UID supplied"
+                    },
+                    "404":{
+                        "description":"USER NOT FOUND"
+                    }
+                }
+            }
+        
+        
+        },
         "/api/reg_calender/get_reg_calender_active": {
             "get": {
                 "tags": [
