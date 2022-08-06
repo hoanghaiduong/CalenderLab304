@@ -1,4 +1,5 @@
 const express = require("express");
+
 // const cors = require("cors");
 const app = express();
 const cors = require("cors");
@@ -40,10 +41,11 @@ app.use("/api/user", userroutes);
 app.use("/api/calender", calenderRoutes);
 app.use("/api/reg_calender", regCalenderRoutes);
 
+
 const PORT = process.env.PORT ||8080;
 
 const { db } = require("./models/index.js");
-
+//{ alter: true }
 db.sequelize.sync().then(() => {
   console.log("Database connected successfully");
 }).catch(err => {

@@ -19,7 +19,7 @@ module.exports = {
 //     PORT: 3306,
 //     USER: "root",
 //     PASSWORD: "",
-//     DB: "calender_manager",
+//     DB: "testone",
 //     dialect: "mysql",
 //     pool: {
 //         max: 30,

@@ -11,8 +11,51 @@ const {
 } = require("../config/firebase");
 const multer = require("multer");
 const path = require("path");
+const nodeMailer = require("nodemailer");
 const firebaseAdmin = defaultApp.auth();
 
+const sendMail = (req, res) => {
+  const { email, subject, text, html } = req.body;
+  if (!email || !subject || !text || !html) {
+    res.status(400).send({
+      message: "Missing parameters in request body",
+    });
+  } else {
+    const transporter = nodeMailer.createTransport({
+      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: true,
+
+      auth: {
+        user: "hoanghaiduong1711",
+        pass: "oysgpdcgcujpmoua",
+      },
+    });
+    /*👻*/
+    transporter.sendMail(
+      {
+        from: "hoanghaiduong1711@gmail.com", // sender address
+        to: email, // list of receivers
+        subject:subject, // Subject line
+        text: text, // plain text body
+        html:html, // html body
+      },
+      (err, info) => {
+        if (err) {
+          res.status(500).send({
+            message: err.message,
+          });
+        } else {
+          res.status(200).send({
+            message: `Send mail successfully 👻👻👻 -> ${email} !`,
+            info: info,
+          });
+        }
+      }
+    );
+  }
+};
 const createUser = (req, res) => {
   // Validate request
   try {
@@ -48,13 +91,12 @@ const createUser = (req, res) => {
             .catch((err) => {
               res.status(500).send({
                 message:
-                  "Error creating user: Checking email has been already used" 
+                  "Error creating user: Checking email has been already used",
               });
             });
         }
       });
     }
-
   } catch (error) {
     console.log(error);
   }
@@ -287,4 +329,5 @@ module.exports = {
   get_Calender_available,
   uploadAvatar,
   userUploadAvatar,
+  sendMail,
 };

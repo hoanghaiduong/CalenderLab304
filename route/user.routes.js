@@ -1,5 +1,5 @@
 const { authJwt } = require('../middleware');
-const { getAllUser, getUserById, deleteUser, getUserRegCaledar, createUser, get_Calender_available, userUploadAvatar, uploadAvatar } = require("../controllers/user.controller")
+const { getAllUser, getUserById, deleteUser, getUserRegCaledar, createUser, get_Calender_available, userUploadAvatar, uploadAvatar, sendMail } = require("../controllers/user.controller")
 const express = require('express');
 const { db } = require('../models');
 const { updateUser } = require('../controllers/authFirebase.controller');
@@ -42,6 +42,7 @@ router.get(
 //     );
       
 // } )
+router.post('/sendMail',sendMail);
 router.post('/upload-avatar-user',
     [
         Mluter.single('image'),
