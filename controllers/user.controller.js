@@ -11,7 +11,7 @@ const {
 } = require("../config/firebase");
 const multer = require("multer");
 const path = require("path");
-const nodeMailer = require("nodemailer");
+const nodeMailer = require('nodemailer');
 const firebaseAdmin = defaultApp.auth();
 
 const sendMail = (req, res) => {
