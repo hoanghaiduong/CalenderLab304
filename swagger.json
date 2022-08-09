@@ -23,6 +23,57 @@
         }
     ],
     "paths": {
+        "/api/user/sendMail":{
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Send mail to user",
+                "description": "Gửi mail cho người dùng",
+                "operationId": "sendMail",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Send Mail",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/SendMail"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/SendMail"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        
+        },
         "/api/user/createUser":{
             "post": {
                 "tags": [
@@ -1066,8 +1117,42 @@
                 }
             }
         }
+
     },
     "definitions": {
+        "SendMail": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email của người dùng cần gửi",
+                    "required": true,
+                    "example": "toExample@gmail.com"
+                },
+                "subject": {
+                    "type": "string",
+                    "format": "string",
+                    "description": "Tiêu đề của email",
+                    "required": true,
+                    "example": "Tiêu đề của email"
+                },
+                "text": {
+                    "type": "string",
+                    "format": "string",
+                    "description": "Nội dung của email",
+                    "required": true,
+                    "example": "Nội dung của email"
+                },
+                "html": {
+                    "type": "string",
+                    "format": "string",
+                    "description": "Nội dung của email",
+                    "required": true,
+                    "example": "Nội dung của email"
+                }
+            }
+        },
         "Create_user":{
             "type": "object",
             "properties": {

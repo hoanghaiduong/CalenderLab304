@@ -16,44 +16,50 @@ const firebaseAdmin = defaultApp.auth();
 
 const sendMail = (req, res) => {
   const { email, subject, text, html } = req.body;
-  if (!email || !subject || !text || !html) {
-    res.status(400).send({
-      message: "Missing parameters in request body",
-    });
-  } else {
-    const transporter = nodeMailer.createTransport({
-      service: "gmail",
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: true,
-
-      auth: {
-        user: "hoanghaiduong1711",
-        pass: "oysgpdcgcujpmoua",
-      },
-    });
-    /*👻*/
-    transporter.sendMail(
-      {
-        from: "hoanghaiduong1711@gmail.com", // sender address
-        to: email, // list of receivers
-        subject:subject, // Subject line
-        text: text, // plain text body
-        html:html, // html body
-      },
-      (err, info) => {
-        if (err) {
-          res.status(500).send({
-            message: err.message,
-          });
-        } else {
-          res.status(200).send({
-            message: `Send mail successfully 👻👻👻 -> ${email} !`,
-            info: info,
-          });
+  try {
+    if (!email || !subject || !text || !html) {
+      res.status(400).send({
+        message: "Missing parameters in request body",
+      });
+    } else {
+      const transporter = nodeMailer.createTransport({
+        service: "gmail",
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: true,
+  
+        auth: {
+          user: "hoanghaiduong1711",
+          pass: "oysgpdcgcujpmoua",
+        },
+      });
+      /*👻*/
+      transporter.sendMail(
+        {
+          from: "hoanghaiduong1711@gmail.com", // sender address
+          to: email, // list of receivers
+          subject: subject, // Subject line
+          text: text, // plain text body
+          html: html, // html body
+        },
+        (err, info) => {
+          if (err) {
+            res.status(500).send({
+              message: err.message,
+            });
+          } else {
+            res.status(200).send({
+              message: `Send mail successfully 👻👻👻 -> ${email} !`,
+              info: info,
+            });
+          }
         }
-      }
-    );
+      );
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || "Some error occurred while sending mail.",
+    });
   }
 };
 const createUser = (req, res) => {
@@ -91,7 +97,7 @@ const createUser = (req, res) => {
             .catch((err) => {
               res.status(500).send({
                 message:
-                  "Error creating user: Checking email has been already used",
+                  err.message || "Some error occurred while creating the User.",
               });
             });
         }
@@ -103,159 +109,189 @@ const createUser = (req, res) => {
 };
 const getUserById = (req, res) => {
   //findone by uuid
-  User.findOne({
-    where: {
-      uid: req.params.uid,
-    },
+  try {
+    User.findOne({
+      where: {
+        uid: req.params.uid,
+      },
+    })
+      .then((user) => {
+        if (user) {
+          firebaseAdmin.getUser(req.params.uid).then((user) => {
+            if (user) {
+              res.status(200).json({
+                message: "Get User Successfully!",
+                data: user,
+              });
+            } else {
+              res.status(400).send({
+                message: "User NOT FOUND.",
+              });
+            }
+          });
+        } else {
+          res.status(400).send({
+            message: "User was not found.",
+          });
+        }
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message,
+        });
+      });
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || "Some error occurred while deleting User.",
+    });
+  }
+}
+
+const getAllUser = (req, res) => {
+ try {
+  User.findAll()
+  .then((user) => {
+    res.status(200).json({
+      message: "Get all user successfully!",
+      data: user,
+    });
   })
-    .then((user) => {
-      if (user) {
-        firebaseAdmin.getUser(req.params.uid).then((user) => {
+  .catch((err) => {
+    res.status(500).send({
+      message: err.message,
+    });
+  });
+ } catch (error) {
+    res.status(500).send({
+      message: error.message || "Some error occurred while deleting User.",
+    });
+ }
+};
+
+const deleteUser = (req, res) => {
+  const uid = req.params.uid;
+  try {
+    firebaseAdmin
+      .deleteUser(uid)
+      .then(() => {
+        User.findOne({
+          where: {
+            uid: uid,
+          },
+        }).then((user) => {
           if (user) {
-            res.status(200).json({
-              message: "Get User Successfully!",
-              data: user,
-            });
+            User.destroy({
+              where: {
+                uid: uid,
+              },
+            })
+              .then(() => {
+                res.status(200).json({
+                  message: "Delete User Successfully!",
+                });
+              })
+              .catch((err) => {
+                res.status(500).send({
+                  message:
+                    err.message || "Some error occurred while deleting User.",
+                });
+              });
           } else {
             res.status(400).send({
               message: "User NOT FOUND.",
             });
           }
         });
-      } else {
-        res.status(400).send({
-          message: "User was not found.",
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message || "Some error occurred while deleting User.",
         });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message,
       });
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || "Some error occurred while deleting User.",
     });
+  }
 };
-
-const getAllUser = (req, res) => {
-  User.findAll()
-    .then((user) => {
+const get_Calender_available = (req, res) => {
+  try {
+    Calender.findAll({
+      where: {
+        available: true,
+      },
+    }).then((calender) => {
       res.status(200).json({
-        message: "Get all user successfully!",
-        data: user,
-      });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message,
+        message: "Get all calender successfully!",
+        data: calender,
       });
     });
+  } catch (error) {
+    res.status(500).send({
+      message: error.message || "Some error occurred while deleting User.",
+    });
+  }
 };
-
-const deleteUser = (req, res) => {
-  const uid = req.params.uid;
-  firebaseAdmin
-    .deleteUser(uid)
-    .then(() => {
-      User.findOne({
-        where: {
-          uid: uid,
-        },
-      }).then((user) => {
+//người dùng xem lại những lịch mình đăng kí
+const getUserRegCaledar = (req, res) => {
+  try {
+    User.findByPk(req.userId)
+      .then((user) => {
         if (user) {
-          User.destroy({
+          Reg_Calender.findAll({
             where: {
-              uid: uid,
+              user_id: req.userId,
             },
+            include: [
+              {
+                model: Calender,
+                attributes: [
+                  "id",
+                  "DayOftheweek",
+                  "SessionDay",
+                  "available",
+                  "capacity",
+                ],
+              },
+              {
+                model: User,
+                attributes: [
+                  "uid",
+                  "displayName",
+                  "email",
+                  "phoneNumber",
+                  "photoURL",
+                ],
+              },
+            ],
           })
-            .then(() => {
+            .then((reg_calender) => {
               res.status(200).json({
-                message: "Delete User Successfully!",
+                message: "Get User Reg Calender  Successfully!",
+                data: reg_calender,
               });
             })
             .catch((err) => {
               res.status(500).send({
-                message:
-                  err.message || "Some error occurred while deleting User.",
+                message: err.message,
               });
             });
         } else {
           res.status(400).send({
-            message: "User NOT FOUND.",
+            message: "User was not found.",
           });
         }
-      });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while deleting User.",
-      });
-    });
-};
-const get_Calender_available = (req, res) => {
-  Calender.findAll({
-    where: {
-      available: true,
-    },
-  }).then((calender) => {
-    res.status(200).json({
-      message: "Get all calender successfully!",
-      data: calender,
-    });
-  });
-};
-//người dùng xem lại những lịch mình đăng kí
-const getUserRegCaledar = (req, res) => {
-  User.findByPk(req.userId)
-    .then((user) => {
-      if (user) {
-        Reg_Calender.findAll({
-          where: {
-            user_id: req.userId,
-          },
-          include: [
-            {
-              model: Calender,
-              attributes: [
-                "id",
-                "DayOftheweek",
-                "SessionDay",
-                "available",
-                "capacity",
-              ],
-            },
-            {
-              model: User,
-              attributes: [
-                "uid",
-                "displayName",
-                "email",
-                "phoneNumber",
-                "photoURL",
-              ],
-            },
-          ],
-        })
-          .then((reg_calender) => {
-            res.status(200).json({
-              message: "Get User Reg Calender  Successfully!",
-              data: reg_calender,
-            });
-          })
-          .catch((err) => {
-            res.status(500).send({
-              message: err.message,
-            });
-          });
-      } else {
-        res.status(400).send({
-          message: "User was not found.",
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message,
         });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message,
       });
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
     });
+  }
 };
 const stroage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -282,42 +318,48 @@ const uploadAvatar = multer({
 }).single("avatar");
 
 const userUploadAvatar = (req, res) => {
-  if (req.file) {
-    console.log(req.file.firebaseUrl);
-    User.findByPk(req.userId)
-      .then((user) => {
-        if (user) {
-          User.update(
-            {
-              photoURL: req.file.firebaseUrl,
-            },
-            {
-              where: {
-                uid: req.userId,
+  try {
+    if (req.file) {
+      console.log(req.file.firebaseUrl);
+      User.findByPk(req.userId)
+        .then((user) => {
+          if (user) {
+            User.update(
+              {
+                photoURL: req.file.firebaseUrl,
               },
-            }
-          )
-            .then(() => {
-              res.status(200).json({
-                message: "Upload Avatar Successfully!",
+              {
+                where: {
+                  uid: req.userId,
+                },
+              }
+            )
+              .then(() => {
+                res.status(200).json({
+                  message: "Upload Avatar Successfully!",
+                });
+              })
+              .catch((err) => {
+                res.status(500).send({
+                  message: err.message,
+                });
               });
-            })
-            .catch((err) => {
-              res.status(500).send({
-                message: err.message,
-              });
+          } else {
+            res.status(400).send({
+              message: "User was not found.",
             });
-        } else {
-          res.status(400).send({
-            message: "User was not found.",
+          }
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: err.message,
           });
-        }
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message: err.message,
         });
-      });
+    }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
+    });
   }
 };
 module.exports = {

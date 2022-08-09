@@ -12,6 +12,7 @@ const additionalClaims = {
 
 const updateUser = (req, res) => {
     const uid = req.params.uid;
+  try {
     if (!uid) {
         res.status(400).send({
             uid: "UID is required"
@@ -47,6 +48,11 @@ const updateUser = (req, res) => {
         })
 
     }
+  } catch (error) {
+    res.status(500).send({
+      message: error.message
+    });
+  }
 }
 const signupWithAmonymous = (req, res) => {
     /*
