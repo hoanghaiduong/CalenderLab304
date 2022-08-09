@@ -43,6 +43,7 @@ const get_Calender = (req, res) => {
   }
 };
 const get_Calender_by_id = (req, res) => {
+ try {
   Calender.findOne({
     where: {
       id: req.params.id,
@@ -57,9 +58,13 @@ const get_Calender_by_id = (req, res) => {
           err.message || "Some error occurred while retrieving Calender.",
       });
     });
+ } catch (error) {
+  res.send(error);
+ }
 };
 const get_Calender_by_month_year = (req, res) => {
-  const { month, year } = req.query;
+  try {
+    const { month, year } = req.query;
   if (!month && !year) {
     res.status(400).send({
       message: "Missing monthOfYear and year",
@@ -89,37 +94,45 @@ const get_Calender_by_month_year = (req, res) => {
         });
       });
   }
+  } catch (error) {
+    res.send(error);
+  }
 };
 
 const update_Calender = (req, res) => {
-  Calender.update(
-    {
-      DayOftheweek: req.body.DayOftheweek,
-      sessionDay: req.body.sessionDay,
-      available: req.body.available,
-      capacity: req.body.capacity,
-      dayOfMonth: req.body.dayOfMonth,
-      monthOfYear: req.body.monthOfYear,
-      year: req.body.year,
-    },
-    {
-      where: {
-        id: req.params.id,
+  try {
+    Calender.update(
+      {
+        DayOftheweek: req.body.DayOftheweek,
+        sessionDay: req.body.sessionDay,
+        available: req.body.available,
+        capacity: req.body.capacity,
+        dayOfMonth: req.body.dayOfMonth,
+        monthOfYear: req.body.monthOfYear,
+        year: req.body.year,
       },
-    }
-  )
-    .then(() => {
-      res.send({
-        message: "Calender was updated successfully.",
+      {
+        where: {
+          id: req.params.id,
+        },
+      }
+    )
+      .then(() => {
+        res.send({
+          message: "Calender was updated successfully.",
+        });
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message || "Some error occurred while updating Calender.",
+        });
       });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while updating Calender.",
-      });
-    });
+  } catch (error) {
+      res.send(error);
+  }
 };
 const delete_Calender = (req, res) => {
+ try {
   Calender.destroy({
     where: {
       id: req.params.id,
@@ -135,6 +148,11 @@ const delete_Calender = (req, res) => {
         message: err.message || "Some error occurred while deleting Calender.",
       });
     });
+ } catch (error) {
+  res.status(500).send({
+    message: error.message || "Some error occurred while deleting Calender.",
+  });
+ }
 };
 module.exports = {
   create_Calender,
